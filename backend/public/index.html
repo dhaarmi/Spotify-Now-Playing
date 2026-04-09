@@ -2,15 +2,32 @@
 <html>
 <head>
   <title>Spotify Share</title>
+  <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <h2>Share your music 🎧</h2>
-  <button onclick="login()">Login with Spotify</button>
+
+  <div class="container">
+
+    <div class="card landing">
+
+      <h1>🎧 Now Playing</h1>
+      <p class="tagline">
+        Share your music in real-time with your friends
+      </p>
+
+      <button class="login-btn" onclick="login()">
+        Login with Spotify
+      </button>
+
+    </div>
+
+  </div>
 
   <script>
     function login() {
       window.location.href = "/login";
     }
   </script>
+
 </body>
 </html>

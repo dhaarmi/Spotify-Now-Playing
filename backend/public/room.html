@@ -2,17 +2,29 @@
 <html>
 <head>
   <title>Now Playing</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/style.css">
 </head>
 <body>
 
   <div class="container">
+    
     <div class="card">
       <img id="art" />
-      <h2 id="song">Loading...</h2>
-      <p id="artist"></p>
-      <p id="status"></p>
+
+      <div class="info">
+        <p class="label">Listening Now 🎧</p>
+        <h2 id="song">Loading...</h2>
+        <p id="artist"></p>
+        <p id="status"></p>
+      </div>
+
+      <!-- SHARE BUTTON -->
+      <div class="share">
+        <button onclick="copyLink()">Copy Link 🔗</button>
+      </div>
+
     </div>
+
   </div>
 
   <script src="/socket.io/socket.io.js"></script>

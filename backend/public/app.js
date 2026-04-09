@@ -21,3 +21,8 @@ socket.on("now-playing", (data) => {
   document.getElementById("status").innerText =
     data.isPlaying ? "🟢 Live" : "⏸ Paused";
 });
+
+function copyLink() {
+  navigator.clipboard.writeText(window.location.href);
+  alert("Link copied!");
+}

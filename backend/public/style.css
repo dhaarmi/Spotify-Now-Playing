@@ -1,21 +1,103 @@
 body {
+  margin: 0;
   background: #121212;
+  font-family: 'Segoe UI', sans-serif;
   color: white;
-  font-family: Arial;
+}
+
+/* Center layout */
+.container {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
 }
 
+/* Card */
 .card {
   background: #181818;
+  border-radius: 20px;
   padding: 20px;
-  border-radius: 15px;
+  width: 90%;
+  max-width: 350px;
   text-align: center;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.6);
 }
 
-img {
-  width: 200px;
-  border-radius: 10px;
+/* Album art */
+.card img {
+  width: 100%;
+  border-radius: 15px;
+}
+
+/* Text */
+.label {
+  color: #1DB954;
+  font-size: 12px;
+  margin-top: 10px;
+}
+
+#song {
+  margin: 5px 0;
+}
+
+#artist {
+  color: #b3b3b3;
+}
+
+#status {
+  font-size: 12px;
+  color: #888;
+}
+
+/* Button */
+.share button {
+  margin-top: 15px;
+  background: #1DB954;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 20px;
+  color: white;
+  cursor: pointer;
+}
+
+/* Mobile */
+@media (max-width: 500px) {
+  .card {
+    width: 95%;
+  }
+}
+
+/* Landing page specific */
+.landing {
+  text-align: center;
+  padding: 30px;
+}
+
+.landing h1 {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.tagline {
+  color: #b3b3b3;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+/* Login button */
+.login-btn {
+  background: #1DB954;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 25px;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.login-btn:hover {
+  transform: scale(1.05);
+  background: #1ed760;
 }
