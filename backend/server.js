@@ -13,10 +13,14 @@ const PORT = process.env.PORT || 3000;
 app.use(cors({ origin: "*" }));
 app.use(express.json());
 
-// ✅ Serve frontend
-app.use(express.static(path.join(__dirname, "../frontend")));
+// ✅ SERVE FRONTEND
+app.use(express.static(path.join(__dirname, "public")));
 
-// 🔐 Store tokens + rooms
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public/index.html"));
+});
+
+// 🔐 STORE TOKENS + ROOMS
 let userTokens = {};
 let rooms = {};
 
@@ -25,10 +29,7 @@ let rooms = {};
 async function refreshAccessToken(userId) {
   const refresh_token = userTokens[userId]?.refresh_token;
 
-  if (!refresh_token) {
-    console.log("No refresh token");
-    return;
-  }
+  if (!refresh_token) return;
 
   try {
     const res = await axios.post(
@@ -45,11 +46,10 @@ async function refreshAccessToken(userId) {
     );
 
     userTokens[userId].access_token = res.data.access_token;
-
     console.log("✅ Token refreshed");
 
   } catch (err) {
-    console.error("❌ Refresh failed:", err.response?.data || err.message);
+    console.error("❌ Refresh failed");
   }
 }
 
@@ -93,14 +93,10 @@ app.get("/callback", async (req, res) => {
     const roomId = uuidv4();
     rooms[roomId] = userId;
 
-    console.log("User:", userId);
-    console.log("Room:", roomId);
-
-    // ✅ REDIRECT (NO localhost)
     res.redirect(`/room.html?room=${roomId}`);
 
   } catch (err) {
-    console.error("Callback error:", err.response?.data || err.message);
+    console.error(err.response?.data || err.message);
     res.send("Auth failed");
   }
 });
@@ -129,12 +125,9 @@ async function getNowPlaying(userId) {
 
   } catch (err) {
     if (err.response?.status === 401) {
-      console.log("⚠️ Token expired, refreshing...");
       await refreshAccessToken(userId);
       return getNowPlaying(userId);
     }
-
-    console.log("Spotify error:", err.response?.status);
     return null;
   }
 }
@@ -147,28 +140,19 @@ const io = require("socket.io")(server, {
 });
 
 io.on("connection", (socket) => {
-  console.log("Client connected");
-
   socket.on("join-room", (roomId) => {
-    console.log("Joining room:", roomId);
-
     socket.join(roomId);
 
     const interval = setInterval(async () => {
       const userId = rooms[roomId];
-
       if (!userId) return;
 
       const data = await getNowPlaying(userId);
-
       io.to(roomId).emit("now-playing", data);
 
     }, 5000);
 
-    socket.on("disconnect", () => {
-      clearInterval(interval);
-      console.log("Client disconnected");
-    });
+    socket.on("disconnect", () => clearInterval(interval));
   });
 });
 
