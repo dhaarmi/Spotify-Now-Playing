@@ -1,7 +1,7 @@
 # Node modules
 node_modules/
 
-# Environment variables (VERY IMPORTANT)
+# Environment variables
 .env
 backend/.env
 
