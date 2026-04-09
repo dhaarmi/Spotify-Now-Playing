@@ -3,21 +3,25 @@ const axios = require("axios");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const { v4: uuidv4 } = require("uuid");
+const path = require("path");
 
 dotenv.config();
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 app.use(cors({ origin: "*" }));
 app.use(express.json());
 
-// 🔐 Store tokens + rooms (in-memory)
+// ✅ Serve frontend
+app.use(express.static(path.join(__dirname, "../frontend")));
+
+// 🔐 Store tokens + rooms
 let userTokens = {};
 let rooms = {};
 
 
-// 🔁 REFRESH TOKEN FUNCTION (NEW)
+// 🔁 REFRESH TOKEN
 async function refreshAccessToken(userId) {
   const refresh_token = userTokens[userId]?.refresh_token;
 
@@ -81,7 +85,6 @@ app.get("/callback", async (req, res) => {
 
     const userId = uuidv4();
 
-    // ✅ STORE TOKENS PROPERLY
     userTokens[userId] = {
       access_token: tokenRes.data.access_token,
       refresh_token: tokenRes.data.refresh_token
@@ -93,8 +96,8 @@ app.get("/callback", async (req, res) => {
     console.log("User:", userId);
     console.log("Room:", roomId);
 
-    // 🔥 REDIRECT TO FRONTEND ROOM PAGE
-    res.redirect(`http://127.0.0.1:5500/frontend/room.html?room=${roomId}`);
+    // ✅ REDIRECT (NO localhost)
+    res.redirect(`/room.html?room=${roomId}`);
 
   } catch (err) {
     console.error("Callback error:", err.response?.data || err.message);
@@ -103,7 +106,7 @@ app.get("/callback", async (req, res) => {
 });
 
 
-// 🎵 GET NOW PLAYING (WITH AUTO REFRESH)
+// 🎵 GET NOW PLAYING
 async function getNowPlaying(userId) {
   try {
     const token = userTokens[userId]?.access_token;
@@ -125,11 +128,10 @@ async function getNowPlaying(userId) {
     };
 
   } catch (err) {
-    // 🔥 AUTO REFRESH TRIGGER
     if (err.response?.status === 401) {
       console.log("⚠️ Token expired, refreshing...");
       await refreshAccessToken(userId);
-      return getNowPlaying(userId); // retry
+      return getNowPlaying(userId);
     }
 
     console.log("Spotify error:", err.response?.status);
@@ -159,8 +161,6 @@ io.on("connection", (socket) => {
 
       const data = await getNowPlaying(userId);
 
-      console.log("Sending:", data);
-
       io.to(roomId).emit("now-playing", data);
 
     }, 5000);
@@ -174,5 +174,5 @@ io.on("connection", (socket) => {
 
 
 server.listen(PORT, () => {
-  console.log(`🚀 Server running on http://127.0.0.1:${PORT}`);
+  console.log(`🚀 Running on port ${PORT}`);
 });
